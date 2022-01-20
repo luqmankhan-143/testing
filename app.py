@@ -54,7 +54,7 @@ def login():
                 return render_template('invalid.html')
 
         except:
-            return "username not available"
+            return render_template('invalid.html')
 
 
 if __name__ == '__main__':
