@@ -51,7 +51,7 @@ def login():
                return  render_template('view.html',tables=[top_5_product.to_html(classes='name')], titles = ['NAN', 'Top 5 Prediction'])
                
             else:
-                return 'username not available'
+                return render_template('invalid.html')
 
         except:
             return "username not available"
