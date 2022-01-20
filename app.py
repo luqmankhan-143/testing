@@ -6,6 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 import pickle
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfTransformer,CountVectorizer
+import model
 
 # Create the application.
 app = flask.Flask(__name__)
@@ -26,29 +27,8 @@ def login():
             data = reviews[reviews['reviews_username'] == name]
             
             if not data.empty:
-               pipeline = pickle.load(open('pickle/user_based_recomm.pkl', 'rb'))
-               sr = pipeline.loc[name].sort_values(ascending=False)[0:20] ## series
-               top_20_products = pd.DataFrame({'name':sr.index})
-               
-               top_20_reviews = reviews[reviews['name'].isin(top_20_products['name'])][['name','reviews_text']]
-               
-               transformer = TfidfTransformer()
-               loaded_vec = CountVectorizer(decode_error="replace",vocabulary=pickle.load(open('pickle/vector', 'rb')))
-               test_data_features = transformer.fit_transform(loaded_vec.fit_transform(top_20_reviews['reviews_text']))
-               
-               loaded_model = pickle.load(open("pickle/LRModel", 'rb'))
-               result1 = loaded_model.predict(test_data_features)
-               
-               top_20_reviews['sentiment'] = result1.tolist()
-               
-               top = top_20_reviews.groupby(['name']).mean()
-               
-               top5 = top.sort_values(by='sentiment',ascending=False)[:5]
-               top5.reset_index(level=0, inplace=True)
-               top_5_products= top5['name']
-               top_5_product = pd.DataFrame({'name':top_5_products})
-               
-               return  render_template('view.html',tables=[top_5_product.to_html(classes='name')], titles = ['NAN', 'Top 5 Prediction'])
+                result =model.prediction(name,reviews)
+                return  render_template('view.html',tables=[result.to_html(classes='name')], titles = ['NAN', 'Top 5 Prediction'])
                
             else:
                 return render_template('invalid.html')
