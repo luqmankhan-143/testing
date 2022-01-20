@@ -13,3 +13,6 @@ xgboost==0.90.0
 
 Flask-SQLAlchemy
 requests
+model
+imblearn
+nltk

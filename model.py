@@ -5,8 +5,6 @@ import re
 import time
 import pandas as pd
 import numpy as np
-import seaborn as sns
-import matplotlib.pyplot as plt
 from collections import Counter
 from datetime import datetime
 import warnings
