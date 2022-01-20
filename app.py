@@ -6,7 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 import pickle
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfTransformer,CountVectorizer
-import model
+from model import *
 
 # Create the application.
 app = flask.Flask(__name__)

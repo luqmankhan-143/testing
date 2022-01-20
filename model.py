@@ -142,8 +142,7 @@ def model(df,classifier,filename):
       pickle.dump(classifier, open(filename, 'wb'))
     # plot confusion matrix
     cm = confusion_matrix(y_test, y_pred) 
-
-@app.route('/login', methods=['GET', 'POST'])   
+ 
 def prediction(name,reviews):
     print(name)
     pipeline = pickle.load(open('pickle/user_based_recomm.pkl', 'rb'))
@@ -163,6 +162,3 @@ def prediction(name,reviews):
     top_5_product = pd.DataFrame({'name':top_5_products})
     return top_5_product  
 
-
-loadingdata('dataset/sample30.csv',"joshua")
-print(loadingdata('dataset/sample30.csv',"joshua"))
