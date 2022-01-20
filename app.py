@@ -2,11 +2,11 @@ import flask
 import os
 
 from flask import Flask, url_for, render_template, request, redirect, session
-from flask_sqlalchemy import SQLAlchemy
+#from flask_sqlalchemy import SQLAlchemy
 import pickle
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfTransformer,CountVectorizer
-from model import *
+import model
 
 # Create the application.
 app = flask.Flask(__name__)
@@ -40,5 +40,5 @@ def login():
 if __name__ == '__main__':
     app.debug=True
     port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.run( port=port)
     
