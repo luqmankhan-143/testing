@@ -25,8 +25,10 @@ def login():
         name = request.form['username']
         try:
             data = reviews[reviews['reviews_username'] == name]
+            print(data)
             
             if not data.empty:
+                print("here",name)
                 result =model.prediction(name,reviews)
                 return  render_template('view.html',tables=[result.to_html(classes='name')], titles = ['NAN', 'Top 5 Prediction'])
                

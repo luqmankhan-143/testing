@@ -142,7 +142,48 @@ def model(df,classifier,filename):
       pickle.dump(classifier, open(filename, 'wb'))
     # plot confusion matrix
     cm = confusion_matrix(y_test, y_pred) 
- 
+
+
+"""**Dividing train and test dataset**"""
+
+# Test and Train split of the dataset.
+def recommendation(df):
+    df=pd.read_csv(path)
+    X_train, X_test, y_train, y_test = train_test_split(df['reviews_text'],df['user_sentiment'], test_size=0.2, random_state=42)
+    from sklearn.model_selection import train_test_split
+    train, test = train_test_split(reviews, test_size=0.30, random_state=31)
+    # Pivot the train ratings dataset into matrix format in which columns are product_names and the rows are reviewers_name.
+    df_pivot= train.pivot_table(
+    index='reviews_username',
+    columns='name',
+    values='reviews_rating').fillna(0)
+    dummy_train = train.copy()
+    # The products not rated by user is marked as 1 for prediction. 
+    dummy_train['reviews_rating'] = dummy_train['reviews_rating'].apply(lambda x: 0 if x>=1 else 1)
+    # Convert the dummy train dataset into matrix format.
+    dummy_train= train.pivot_table(
+    index='reviews_username',
+    columns='name',
+    values='reviews_rating').fillna(1)
+    from sklearn.metrics.pairwise import pairwise_distances
+    user_correlation = 1 - pairwise_distances(df_pivot, metric='cosine')
+    user_correlation[np.isnan(user_correlation)] = 0
+    # Create a user-movie matrix.
+    df_pivot = train.pivot_table(
+    index='reviews_username',
+    columns='name',
+    values='reviews_rating')
+    mean = np.nanmean(df_pivot, axis=1)
+    df_subtracted = (df_pivot.T-mean).T
+    
+    user_correlation = 1 - pairwise_distances(df_subtracted.fillna(0), metric='cosine')
+    user_correlation[np.isnan(user_correlation)] = 0
+    user_correlation[user_correlation<0]=0
+    user_predicted_ratings = np.dot(user_correlation, df_pivot.fillna(0))
+    user_final_rating = np.multiply(user_predicted_ratings,dummy_train)
+    import pickle 
+    pickle.dump(user_final_rating, open("user_based_recomm.pkl", "wb"))
+    
 def prediction(name,reviews):
     print(name)
     pipeline = pickle.load(open('pickle/user_based_recomm.pkl', 'rb'))
@@ -160,5 +201,4 @@ def prediction(name,reviews):
     top5.reset_index(level=0, inplace=True)
     top_5_products= top5['name']
     top_5_product = pd.DataFrame({'name':top_5_products})
-    return top_5_product  
-
+    return top_5_product
